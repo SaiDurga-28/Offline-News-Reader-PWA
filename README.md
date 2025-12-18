@@ -86,7 +86,7 @@ npm start
 
 **Open in browser:**
 
-`http://localhost:3000`
+http://localhost:3000
 
 ## How to Test Offline
 
@@ -127,11 +127,11 @@ npm start
 
 ## Live Demo
 
-- Live URL: `https://darling-belekoy-93f894.netlify.app/`
+- Live URL: https://darling-belekoy-93f894.netlify.app/
 
 ## Demo Video
 
-- Link: `https://drive.google.com/file/d/1yymDQmKBLwKQMC4fJNK5k_gsBiAXHCCa/view?usp=sharing`
+- Link: https://drive.google.com/file/d/1yymDQmKBLwKQMC4fJNK5k_gsBiAXHCCa/view?usp=sharing
 
 **A short demo video shows:** 
 

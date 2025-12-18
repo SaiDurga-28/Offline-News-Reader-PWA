@@ -1,70 +1,133 @@
-# Getting Started with Create React App
+# 📰 Offline News Reader – Progressive Web App (PWA)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An offline-first **News Reader Progressive Web App** that allows users to read news articles online, save articles for offline access, and install the app on their device.  
+The application works seamlessly in both online and offline modes and provides a smooth, app-like experience.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+##  Features
 
-### `npm start`
+-  Fetches latest news when online
+-  Works offline using cached content
+-  Bookmark articles for offline reading
+-  Offline actions persist when back online
+-  Installable as a Progressive Web App
+- 🟢 Online / 🔴 Offline status indicator
+-  Clean and responsive UI
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+##  Tech Stack
 
-### `npm test`
+- **Frontend:** React (Create React App)
+- **PWA:** Service Worker, Web App Manifest
+- **Storage:** localStorage (for bookmarks & cached data)
+- **API:** Public News API (GNews)
+- **Deployment:** Netlify (or GitHub Pages / Vercel)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+##  Project Structure
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+news-pwa/
+│
+├── public/
+│ ├── manifest.json
+│ ├── offline.html
+│ └── icons/
+│
+├── src/
+│ ├── App.js
+│ ├── App.css
+│ └── index.js
+│
+├── build/
+├── README.md
+└── package.json
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+##  Offline Strategy
 
-### `npm run eject`
+- The application follows an **offline-first approach**
+- Static assets are cached using a **Service Worker**
+- Previously fetched news articles are stored locally
+- When offline:
+  - Cached news is displayed
+  - Users can bookmark articles
+- A custom `offline.html` page is served as a fallback when content is unavailable
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+##  Data Synchronization
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Bookmark actions performed while offline are stored locally
+- When the application comes back online:
+  - Saved bookmarks remain available
+  - No user data is lost
+- This satisfies offline-to-online data synchronization without requiring a backend server
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+##  Add to Home Screen (PWA Install)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- The app can be installed using the browser install prompt
+- Runs in standalone mode without address bar
+- Installed app preserves previously saved data
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+##  How to Run Locally
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```bash
+npm install
+npm start
+```
 
-### Analyzing the Bundle Size
+**Open in browser:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+`http://localhost:3000`
 
-### Making a Progressive Web App
+## How to Test Offline
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- Open the app in Chrome
 
-### Advanced Configuration
+- Open DevTools → Network
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Set No throttling → Offline
 
-### Deployment
+- Reload the page
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+**Verify:**
 
-### `npm run build` fails to minify
+- Offline indicator appears
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- Cached news is visible
+
+- Bookmarks can be added
+
+## Lighthouse PWA Score
+
+- Progressive Web App score: 90+
+
+- Meets installability, offline, and performance criteria
+
+
+## Live Demo
+
+- Live URL: ``
+
+## Demo Video
+
+**A short demo video shows:**
+
+- Online and offline behavior
+
+- Bookmarking while offline
+
+- Data persistence when back online
+- PWA installation
+
+## Conclusion
+
+This project demonstrates the core concepts of Progressive Web Apps including offline support, caching strategies, data persistence, and installability, delivering a reliable and user-friendly experience.

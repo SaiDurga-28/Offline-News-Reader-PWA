@@ -106,27 +106,45 @@ npm start
 
 - Bookmarks can be added
 
-## Lighthouse PWA Score
+## Responsive Design
 
-- Progressive Web App score: 90+
+### Mobile View
+![Mobile View](screenshots/Mobile_View.png)
+
+### Desktop View
+![Desktop View](screenshots/Desktop_View.png)
+
+
+## Lighthouse Audit
+
+- Lighthouse scores (Performance, Accessibility, Best Practices, SEO): 90+
 
 - Meets installability, offline, and performance criteria
 
 
+![Lighthouse Report](screenshots/Lighthouse_Audit_Score.png)
+
+
 ## Live Demo
 
-- Live URL: ``
+- Live URL: `https://darling-belekoy-93f894.netlify.app/`
 
 ## Demo Video
 
-**A short demo video shows:**
+- Link: `https://drive.google.com/file/d/1yymDQmKBLwKQMC4fJNK5k_gsBiAXHCCa/view?usp=sharing`
+
+**A short demo video shows:** 
 
 - Online and offline behavior
-
 - Bookmarking while offline
-
 - Data persistence when back online
 - PWA installation
+
+**Note:**
+The live deployed version may not display news due to public API CORS or rate limits. 
+However, the application logic for fetching, caching, offline access, bookmarking, 
+and data persistence is fully implemented and demonstrated in the demo video and source code.
+
 
 ## Conclusion
 

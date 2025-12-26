@@ -21,7 +21,7 @@ The application works seamlessly in both online and offline modes and provides a
 
 - **Frontend:** React (Create React App)
 - **PWA:** Service Worker, Web App Manifest
-- **Storage:** localStorage (for bookmarks & cached data)
+- **Storage:** IndexedDB (for offline news caching and bookmarks)
 - **API:** Public News API (GNews)
 - **Deployment:** Netlify (or GitHub Pages / Vercel)
 
@@ -51,7 +51,7 @@ news-pwa/
 
 - The application follows an **offline-first approach**
 - Static assets are cached using a **Service Worker**
-- Previously fetched news articles are stored locally
+- Previously fetched news articles are stored in IndexedDB for reliable offline access
 - When offline:
   - Cached news is displayed
   - Users can bookmark articles
@@ -61,7 +61,7 @@ news-pwa/
 
 ##  Data Synchronization
 
-- Bookmark actions performed while offline are stored locally
+- Bookmark actions performed while offline are stored in IndexedDB
 - When the application comes back online:
   - Saved bookmarks remain available
   - No user data is lost
@@ -148,4 +148,9 @@ and data persistence is fully implemented and demonstrated in the demo video and
 
 ## Conclusion
 
-This project demonstrates the core concepts of Progressive Web Apps including offline support, caching strategies, data persistence, and installability, delivering a reliable and user-friendly experience.
+This project demonstrates the core concepts of Progressive Web Apps including offline-first support using Service Workers and IndexedDB, data persistence, and installability, delivering a reliable and user-friendly experience.
+
+## Security Improvements
+
+- API keys are managed securely using environment variables (.env)
+- Sensitive credentials are not hardcoded or committed to the repository

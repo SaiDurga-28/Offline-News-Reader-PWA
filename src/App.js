@@ -1,33 +1,36 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
+import {
+  saveNewsToDB,
+  getNewsFromDB,
+  saveBookmarkToDB,
+  getBookmarksFromDB,
+  removeBookmarkFromDB,
+} from "./services/db";
 
-const API_URL =
-  "https://gnews.io/api/v4/top-headlines?lang=en&country=in&max=10&apikey=4a9c7db621d64b1b2b484eb909a01de0";
+const API_URL = `https://gnews.io/api/v4/top-headlines?lang=en&country=in&max=10&apikey=${process.env.REACT_APP_NEWS_API_KEY}`;
 
-/* Helper to uniquely identify articles */
-const getArticleId = (article) => {
-  return article.url || article.title?.trim().toLowerCase();
-};
+const getArticleId = (article) =>
+  article.url || article.title.trim().toLowerCase();
 
 function App() {
   const [news, setNews] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [online, setOnline] = useState(navigator.onLine);
 
-  /* =========================
-     Load cached data
-  ========================= */
+  /* Load IndexedDB data */
   useEffect(() => {
-    const cachedNews = localStorage.getItem("cachedNews");
-    const savedBookmarks = localStorage.getItem("bookmarks");
+    const loadDB = async () => {
+      const cachedNews = await getNewsFromDB();
+      const savedBookmarks = await getBookmarksFromDB();
 
-    if (cachedNews) setNews(JSON.parse(cachedNews));
-    if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks));
+      if (cachedNews.length) setNews(cachedNews);
+      if (savedBookmarks.length) setBookmarks(savedBookmarks);
+    };
+    loadDB();
   }, []);
 
-  /* =========================
-     Fetch news (ONLINE ONLY)
-  ========================= */
+  /* Fetch news */
   const fetchLatestNews = async () => {
     if (!navigator.onLine) return;
 
@@ -35,138 +38,98 @@ function App() {
       const res = await fetch(API_URL);
       const data = await res.json();
 
-      if (data.articles && data.articles.length > 0) {
-        setNews(data.articles);
-        localStorage.setItem(
-          "cachedNews",
-          JSON.stringify(data.articles)
-        );
+      if (data.articles) {
+        const articlesWithId = data.articles.map((a) => ({
+          ...a,
+          id: getArticleId(a),
+        }));
+
+        setNews(articlesWithId);
+        await saveNewsToDB(articlesWithId);
       }
-    } catch (err) {
-      console.error("Fetch failed:", err);
+    } catch (e) {
+      console.error(e);
     }
   };
 
-  /* Initial fetch */
   useEffect(() => {
     fetchLatestNews();
   }, []);
 
-  /* =========================
-     ONLINE / OFFLINE STATUS
-     (NO background checks)
-  ========================= */
+  /* Online / Offline */
   useEffect(() => {
-    const handleOnline = () => {
+    const on = () => {
       setOnline(true);
-      fetchLatestNews(); // refresh when internet returns
+      fetchLatestNews();
     };
+    const off = () => setOnline(false);
 
-    const handleOffline = () => {
-      setOnline(false);
-    };
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
     };
   }, []);
 
-  /* =========================
-     Bookmark logic
-  ========================= */
-  const toggleBookmark = (article) => {
-    const id = getArticleId(article);
+  /* Bookmark toggle */
+  const toggleBookmark = async (article) => {
+    const exists = bookmarks.some((b) => b.id === article.id);
 
-    const exists = bookmarks.find(
-      (b) => getArticleId(b) === id
-    );
-
-    let updated;
     if (exists) {
-      updated = bookmarks.filter(
-        (b) => getArticleId(b) !== id
-      );
+      await removeBookmarkFromDB(article.id);
+      setBookmarks(bookmarks.filter((b) => b.id !== article.id));
     } else {
-      updated = [...bookmarks, article];
+      await saveBookmarkToDB(article);
+      setBookmarks([...bookmarks, article]);
     }
-
-    setBookmarks(updated);
-    localStorage.setItem("bookmarks", JSON.stringify(updated));
   };
 
-  /* =========================
-     UI
-  ========================= */
   return (
     <div className="app-container">
-      <h1 className="app-title"> Offline News Reader PWA</h1>
+      <h1 className="app-title">Offline News Reader PWA</h1>
+
       <p className="subtitle">
-  Read latest news online and access saved articles offline
-</p>
-      <div
-  className={`status ${online ? "online" : "offline"}`}
->
-  {online ? "🟢 Online" : "🔴 Offline"}
-</div>
+        Read latest news online and access saved articles offline
+      </p>
 
+      <div className={`status ${online ? "online" : "offline"}`}>
+        {online ? "🟢 Online" : "🔴 Offline"}
+      </div>
 
-      {!online && (
-        <p style={{ color: "#666", fontStyle: "italic" }}>
-          You are offline. Showing cached content.
-        </p>
+      <h2>⭐ Saved Articles</h2>
+      {bookmarks.length === 0 ? (
+        <p>No bookmarks yet.</p>
+      ) : (
+        bookmarks.map((b) => (
+          <div key={b.id} className="card">
+            <h3>{b.title}</h3>
+            <p>{b.description}</p>
+          </div>
+        ))
       )}
 
-  <h2>⭐ Saved Articles</h2>
+      <hr />
 
-<p className="hint">Available even when you are offline</p>
-
-
-{bookmarks.length === 0 ? (
-  <p style={{ color: "#666", fontStyle: "italic" }}>
-    No bookmarks yet. Save articles to read offline.
-  </p>
-) : (
-  bookmarks.map((item, index) => (
-    <div key={index} className="card">
-      <h3>{item.title}</h3>
-      <p>{item.description}</p>
-    </div>
-  ))
-      )}
-      <hr className="divider" />
-
-      {/* ========== NEWS ========== */}
       <h2>Latest News</h2>
-
-      {news.length === 0 && (
-        <p>No news available.</p>
-      )}
-
-      {news.map((item, index) => (
-        <div key={index} className="card">
+      {news.map((item) => (
+        <div key={item.id} className="card">
           <h3>{item.title}</h3>
           <p>{item.description}</p>
-          <button
-  className={
-    bookmarks.find(
-      (b) => getArticleId(b) === getArticleId(item)
-    )
-      ? "btn remove"
-      : "btn add"
-  }
-  onClick={() => toggleBookmark(item)}
->
-  {bookmarks.find(
-    (b) => getArticleId(b) === getArticleId(item)
-  )
-    ? "Remove Bookmark"
-    : "Bookmark"}
-</button>
 
+          <button
+            className={
+              bookmarks.some((b) => b.id === item.id)
+                ? "btn remove"
+                : "btn add"
+            }
+            onClick={() => toggleBookmark(item)}
+          >
+            {bookmarks.some((b) => b.id === item.id)
+              ? "Remove Bookmark"
+              : "Bookmark"}
+          </button>
         </div>
       ))}
     </div>
